@@ -85,19 +85,28 @@ void OpenSLRender::unInit() {
 int OpenSLRender::createEngine() {
     SLresult result = SL_RESULT_SUCCESS;
     do {
-        result = slCreateEngine(&mEngineObj, 0, nullptr,
-                                0, nullptr, nullptr);
+        //创建引擎对象（OpenSL ES唯一入口）
+        result = slCreateEngine(
+                &mEngineObj, //对象地址
+                0, //配置参数数量
+                nullptr,//配置参数，为枚举数组
+                0, //支持的接口数量
+                nullptr, //具体的要支持的接口，是枚举数组
+                nullptr//具体的要支持的接口是开放的还是关闭的，也是数组，这三个数组的长度是一致的
+                );
         if (result != SL_RESULT_SUCCESS) {
             LOGD("OpenSLRender::createEngine slCreateEngine fail. result=%d\n", result);
             break;
         }
 
+        //实例化这个对象
         result = (*mEngineObj)->Realize(mEngineObj, SL_BOOLEAN_FALSE);
         if (result != SL_RESULT_SUCCESS) {
             LOGD("OpenSLRender::createEngine Realize fail. result=%d\n", result);
             break;
         }
 
+        //从这个对象中获取引擎接口
         result = (*mEngineObj)->GetInterface(mEngineObj, SL_IID_ENGINE, &mEngineEngine);
         if (result != SL_RESULT_SUCCESS) {
             LOGD("OpenSLRender::createEngine GetInterface fail. result=%d\n", result);
@@ -135,7 +144,7 @@ int OpenSLRender::createAudioPlayer() {
     SLDataLocator_AndroidSimpleBufferQueue android_queue = {
             SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 2};
     SLDataFormat_PCM pcm = {
-            SL_DATAFORMAT_PCM, // format type
+            SL_DATAFORMAT_PCM, // format type, PCM格式的数据
             (SLuint32)2, // channel count
             SL_SAMPLINGRATE_44_1, // 44100HZ
             SL_PCMSAMPLEFORMAT_FIXED_16, // bits per sample

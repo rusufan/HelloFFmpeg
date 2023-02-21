@@ -160,9 +160,11 @@ void FFMediaPlayer::postMessage(void *context, int msgType, float msgCode) {
         if (env == nullptr) {
             return;
         }
+        //获取到MediaPlay.kt中的MediaPlayer对象的playerEventCallback方法
         jobject javaObj = player->getJavaObj();
         jmethodID mid = env->GetMethodID(env->GetObjectClass(javaObj),
                                          JAVA_PLAYER_EVENT_CALLBACK_API_NAME, "(IF)V");
+        //调用MediaPlayer对象的playerEventCallback方法
         env->CallVoidMethod(javaObj, mid, msgType, msgCode);
         if (isAttach) {
             player->getJavaVM()->DetachCurrentThread();
